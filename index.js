@@ -61,7 +61,7 @@ const isAdmin = function(message, command, next){
 }
 
 const isAccountOwner = function(message, command, next){
-	db.query('SELECT id FROM account WHERE owner=$1 AND name=$2', [message.author.id, command[1]]).then(res => {
+	db.query('SELECT id FROM account WHERE owner=$1 AND UPPER(name)=UPPER($2)', [message.author.id, command[1]]).then(res => {
 		if(res.rows.length > 0){
 			next(message, command);
 		} else {
@@ -71,7 +71,7 @@ const isAccountOwner = function(message, command, next){
 }
 
 const accountDoesNotExist = function(message, command, next){
-	db.query('SELECT id FROM account WHERE name=$1', [command[1]]).then(res => {
+	db.query('SELECT id FROM account WHERE UPPER(name)=UPPER($1)', [command[1]]).then(res => {
 		if(res.rows.length === 0){
  			next(message, command);
 		} else {
@@ -93,7 +93,7 @@ const deleteAccount = function(message, command){
 		sendReply(message, 'Usage `&deleteaccount accountname`');
 		return
 	}
-	db.query('DELETE FROM account WHERE name=$1', [command[1]]).then(res => {sendReply(message, 'Deleted the account ' + command[1])}).catch(errorMessage);
+	db.query('DELETE FROM account WHERE UPPER(name)=UPPER($1)', [command[1]]).then(res => {sendReply(message, 'Deleted the account ' + command[1])}).catch(errorMessage);
 }
 
 const addFriend = function(message, command){
@@ -105,7 +105,7 @@ const addFriend = function(message, command){
 		sendReply(message, 'You cannot friend yourself!');
 		return;
 	}
-	db.query('SELECT id FROM account WHERE name=$1 OR name=$2', [command[1], command[2]]).then(res => {
+	db.query('SELECT id FROM account WHERE UPPER(name)=UPPER($1) OR UPPER(name)=UPPER($2)', [command[1], command[2]]).then(res => {
 		rows = res.rows;
 		if(rows.length != 2){
 			sendReply(message, 'Invalid account names!');
@@ -130,7 +130,7 @@ const deleteFriend = function(message, command){
 		sendReply(message, 'Usage `&deletefriend yourAccount friendAccount`');
 		return;
 	}
-	db.query('SELECT id FROM account WHERE name=$1 OR name=$2', [command[1], command[2]]).then(res => {
+	db.query('SELECT id FROM account WHERE UPPER(name)=UPPER($1) OR UPPER(name)=UPPER($2)', [command[1], command[2]]).then(res => {
 		rows = res.rows;
 		if(rows.length != 2){
 			sendReply(message, 'Invalid account names!');
@@ -149,7 +149,7 @@ const hasPass = function(message, command){
 		sendReply(message, 'Usage `&haspass account true/false`');
 		return;
 	}
-	db.query('UPDATE account SET has=$1 WHERE name=$2', [command[2].toLowerCase(), command[1]]).then(res => {
+	db.query('UPDATE account SET has=$1 WHERE UPPER(name)=UPPER($2)', [command[2].toLowerCase(), command[1]]).then(res => {
 		sendReply(message, 'Set HasPass to ' + command[2] + ' for account ' + command[1]);
 	}).catch(errorMessage);
 }
@@ -159,7 +159,7 @@ const needsPass = function(message, command){
 		sendReply(message, 'Usage `&needspass account true/false`');
 		return;
 	}
-	db.query('UPDATE account SET needs=$1 WHERE name=$2', [command[2].toLowerCase(), command[1]]).then(res => {
+	db.query('UPDATE account SET needs=$1 WHERE UPPER(name)=UPPER($2)', [command[2].toLowerCase(), command[1]]).then(res => {
 		sendReply(message, 'Set NeedsPass to ' + command[2] + ' for account ' + command[1]);
 	}).catch(errorMessage);
 }
@@ -169,7 +169,7 @@ const getStatus = function(message, command){
 		sendReply(message, 'Usage `&getstatus account`');
 		return;
 	}
-	db.query('SELECT name, needs, has FROM account WHERE name=$1', [command[1]]).then(res => {
+	db.query('SELECT name, needs, has FROM account WHERE UPPER(name)=UPPER($1)', [command[1]]).then(res => {
 		rows = res['rows'];
 		sendReply(message, rows[0]['name'] + ' HasPass:' + rows[0]['has'] + ' NeedsPass:' + rows[0]['needs']);
 	}).catch(errorMessage);
