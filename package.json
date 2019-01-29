@@ -1,0 +1,25 @@
+{
+  "name": "expassinviter",
+  "version": "1.0.0",
+  "description": "A Discord Bot for calculating who should invite who to an exriad",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alex-mechler/ExPassInviter.git"
+  },
+  "author": "Alex Mechler",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alex-mechler/ExPassInviter/issues"
+  },
+  "homepage": "https://github.com/alex-mechler/ExPassInviter#readme",
+  "dependencies": {
+    "bipartite-matching": "^1.0.0",
+    "discord.js": "^11.4.2",
+    "dotenv": "^6.2.0",
+    "pg": "^7.8.0"
+  }
+}
