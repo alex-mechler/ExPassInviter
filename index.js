@@ -36,7 +36,10 @@ client.on('message', message => {
   		isAccountOwner(message, command, needsPass);
   		break;
   	case '&getstatus':
-  		isAccountOwner(message, command, getStatus);
+  	  isAccountOwner(message, command, getStatus);
+  		break;
+  	case '&getfriends':
+  		isAccountOwner(message, command, getFriends);
   		break;
   	case '&distributepasses':
   		isAdmin(message, command, distributePasses);
@@ -53,7 +56,7 @@ client.on('message', message => {
 client.login(process.env.CLIENT_TOKEN);
 
 function printHelp(message){
-	message.author.send('Avaliable Commands: \n `&addaccount accountname` \n `&deleteaccount accountname` \n `&addfriend yourAccount friendAccount` \n `&deletefriend yourAccount friendAccount` \n `&haspass account true/false` \n `&needspass account true/false` \n `&getstatus account`');
+	message.author.send('Avaliable Commands: \n `&addaccount accountname` \n `&deleteaccount accountname` \n `&addfriend yourAccount friendAccount` \n `&deletefriend yourAccount friendAccount` \n `&haspass account true/false` \n `&needspass account true/false` \n `&getstatus account` \n `&getfriends account`');
 }
 
 const isAdmin = function(message, command, next){
@@ -173,6 +176,20 @@ const getStatus = function(message, command){
 		rows = res['rows'];
 		sendReply(message, rows[0]['name'] + ' HasPass:' + rows[0]['has'] + ' NeedsPass:' + rows[0]['needs']);
 	}).catch(errorMessage);
+}
+
+const getFriends = function(message, command){
+	db.query('SELECT id FROM account WHERE UPPER(name)=UPPER($1)', [command[1]]).then(res => {
+		id = res['rows'][0]['id'];
+		db.query('SELECT f.name AS fname, s.name AS sname FROM friendship JOIN account AS f ON first=f.id JOIN account AS s ON second=s.id WHERE first=$1 OR second=$1', [id]).then(res => {
+			rows = res['rows'];
+			friends = 'Here is the friend list for the account: ' + command[1] + '\n';
+			for(i in rows){
+				friends += rows[i]['fname'] + ' <-> ' + rows[i]['sname'] + '\n';
+			}
+			message.author.send(friends);
+		});
+	});
 }
 
 const distributePasses = function(message, command){
